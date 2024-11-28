@@ -17,9 +17,11 @@ int main() {
     GLFWwindow* window;
     if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
 
-    int width = 256, height = 256;
-    float scale = 0.5f;
+    int width = 512, height = 512;
+    float scale = 100.0f;
+    //std::vector<float> noise = generate_perlin_noise(width, height, scale, 2, 0.5f);
     std::vector<float> noise = generate_perlin_noise(width, height, scale);
+    apply_gaussian_blur(noise, width, height);
 
     GLuint perlin_texture;
     glGenTextures(1, &perlin_texture);
@@ -36,7 +38,7 @@ int main() {
          1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
         -1.0f,  1.0f, 0.0f,  0.0f, 1.0f
     };
-    GLuint quad_indices[] = { 0, 1, 2, 2, 3, 0};
+    GLuint quad_indices[] = {0, 1, 2, 2, 3, 0};
 
     GLuint vao, vbo, ebo;
     glGenVertexArrays(1, &vao);

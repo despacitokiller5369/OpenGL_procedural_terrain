@@ -1,0 +1,12 @@
+[submodule "OpenGLPrj/vendor/glad"]
+	path = OpenGLPrj/vendor/glad
+	url = https://github.com/Dav1dde/glad
+[submodule "OpenGLPrj/vendor/glfw"]
+	path = OpenGLPrj/vendor/glfw
+	url = https://github.com/glfw/glfw
+[submodule "OpenGLPrj/vendor/glm"]
+	path = OpenGLPrj/vendor/glm
+	url = https://github.com/g-truc/glm
+[submodule "OpenGLPrj/vendor/stb"]
+	path = OpenGLPrj/vendor/stb
+	url = https://github.com/nothings/stb

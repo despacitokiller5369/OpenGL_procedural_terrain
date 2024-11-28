@@ -13,16 +13,14 @@
 #include <cstdlib>
 #include <string>
 
-int main(int argc, char *argv[]) {
+int main() {
     GLFWwindow* window;
     if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
 
-    // Generate and compile perlin noise
-    int width = 512, height = 512;
-    float scale = 1000000.0f;
+    int width = 256, height = 256;
+    float scale = 0.5f;
     std::vector<float> noise = generate_perlin_noise(width, height, scale);
 
-    // Create texture
     GLuint perlin_texture;
     glGenTextures(1, &perlin_texture);
     glBindTexture(GL_TEXTURE_2D, perlin_texture);
@@ -32,7 +30,6 @@ int main(int argc, char *argv[]) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    // Quad vertex data
     float quad_vertices[] = {
         -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
          1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
@@ -41,7 +38,6 @@ int main(int argc, char *argv[]) {
     };
     GLuint quad_indices[] = { 0, 1, 2, 2, 3, 0};
 
-    // Create VAO and VBO and EBO
     GLuint vao, vbo, ebo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -64,7 +60,6 @@ int main(int argc, char *argv[]) {
     const std::string vertex_shader_path = std::string(project_source_dir) + "/shaders/vertex.glsl";
     const std::string fragment_shader_path = std::string(project_source_dir) + "/shaders/fragment.glsl";
 
-    // Create shader program
     GLuint shader_program = create_shader_program_from_files(vertex_shader_path.c_str(), fragment_shader_path.c_str());
 
     // Rendering loop
@@ -76,7 +71,6 @@ int main(int argc, char *argv[]) {
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw triangle
         glUseProgram(shader_program);
         glBindVertexArray(vao);
         glBindTexture(GL_TEXTURE_2D, perlin_texture);

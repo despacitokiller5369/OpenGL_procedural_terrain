@@ -9,3 +9,4 @@ float perlin_noise(float x, float y);
 std::vector<float> generate_perlin_noise(int width, int height, float scale);
 std::vector<float> generate_perlin_noise(int width, int height, float scale, int octaves, float persistence);
 void apply_gaussian_blur(std::vector<float>& noise, int width, int height);
+void apply_gaussian_blur(std::vector<float>& noise, int width, int height, int kernel_size, float sigma);

@@ -139,3 +139,40 @@ void apply_gaussian_blur(std::vector<float>& noise, int width, int height) {
 
     noise = blurrded_noise;
 }
+
+void apply_gaussian_blur(std::vector<float>& noise, int width, int height, int kernel_size, float sigma) {
+    std::vector<std::vector<float>> kernel(kernel_size, std::vector<float>(kernel_size));
+    int half_size = kernel_size / 2;
+    float sum = 0.0f;
+
+    for (int y = -half_size; y <= half_size; y++) {
+        for (int x = -half_size; x <= half_size; x++) {
+            kernel[y + half_size][x + half_size] = std::exp(-(x * x + y * y) / (2 * sigma * sigma));
+            sum += kernel[y + half_size][x + half_size];
+        }
+    }
+
+    for (int y = 0; y < kernel_size; y++) {
+        for (int x = 0; x < kernel_size; x++) {
+            kernel[y][x] /= sum;
+        }
+    }
+
+    std::vector<float> blurred_noise = noise;
+
+    for (int y = half_size; y < height - half_size; y++) {
+        for (int x = half_size; x < width - half_size; x++) {
+            float sum = 0.0f;
+            for (int ky = -half_size; ky <= half_size; ky++) {
+                for (int kx = -half_size; kx <= half_size; kx++) {
+                    int ix = x + kx;
+                    int iy = y + ky;
+                    sum += noise[iy * width + ix] * kernel[ky + half_size][kx + half_size];
+                }
+            }
+            blurred_noise[y * width + x] = sum;
+        }
+    }
+
+    noise = blurred_noise;
+}

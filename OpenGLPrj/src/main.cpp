@@ -18,10 +18,11 @@ int main() {
     if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
 
     int width = 512, height = 512;
-    float scale = 100.0f;
-    //std::vector<float> noise = generate_perlin_noise(width, height, scale, 2, 0.5f);
+    float scale = 10.0f;
+    //std::vector<float> noise = generate_perlin_noise(width, height, scale, 4, 0.5f);
     std::vector<float> noise = generate_perlin_noise(width, height, scale);
-    apply_gaussian_blur(noise, width, height);
+    //apply_gaussian_blur(noise, width, height);
+    //apply_gaussian_blur(noise, width, height, 5, 1.0f);
 
     GLuint perlin_texture;
     glGenTextures(1, &perlin_texture);

@@ -18,7 +18,7 @@ int main() {
     if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
 
     int width = 512, height = 512;
-    float scale = 10.0f;
+    float scale = 100.0f;
     //std::vector<float> noise = generate_perlin_noise(width, height, scale, 4, 0.5f);
     std::vector<float> noise = generate_perlin_noise(width, height, scale);
     //apply_gaussian_blur(noise, width, height);
@@ -63,7 +63,7 @@ int main() {
     const std::string vertex_shader_path = std::string(project_source_dir) + "/shaders/vertex.glsl";
     const std::string fragment_shader_path = std::string(project_source_dir) + "/shaders/fragment.glsl";
 
-    GLuint shader_program = create_shader_program_from_files(vertex_shader_path.c_str(), fragment_shader_path.c_str());
+    Shader shader(vertex_shader_path.c_str(), fragment_shader_path.c_str());
 
     // Rendering loop
     while (!glfwWindowShouldClose(window)) {
@@ -74,7 +74,7 @@ int main() {
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader_program);
+        shader.use();
         glBindVertexArray(vao);
         glBindTexture(GL_TEXTURE_2D, perlin_texture);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

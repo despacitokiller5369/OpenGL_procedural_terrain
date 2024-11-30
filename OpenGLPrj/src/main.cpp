@@ -3,6 +3,7 @@
 #include "utils.hpp"
 #include "shader.hpp"
 #include "perlin.hpp"
+#include "camera.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -13,14 +14,28 @@
 #include <cstdlib>
 #include <string>
 
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float last_x = 0.0f;
+float last_y = 0.0f;
+bool first_mouse = true;
+
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
 int main() {
     GLFWwindow* window;
-    if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
+    if (!init_opengl(window, WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGLPrj")) return EXIT_FAILURE;
+    
+    glfwSetCursorPosCallback(window, glfw_mouse_callback);
+    glfwSetScrollCallback(window, glfw_scroll_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glEnable(GL_DEPTH_TEST);
+
 
     int width = 512, height = 512;
-    float scale = 100.0f;
-    //std::vector<float> noise = generate_perlin_noise(width, height, scale, 4, 0.5f);
-    std::vector<float> noise = generate_perlin_noise(width, height, scale);
+    float scale = 10.0f;
+    std::vector<float> noise = generate_perlin_noise(width, height, scale, 4, 0.5f);
+    //std::vector<float> noise = generate_perlin_noise(width, height, scale);
     //apply_gaussian_blur(noise, width, height);
     //apply_gaussian_blur(noise, width, height, 5, 1.0f);
 
@@ -74,19 +89,34 @@ int main() {
 
     // Rendering loop
     while (!glfwWindowShouldClose(window)) {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
+        float current_frame = (float)glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+
+        process_input(window);
 
         // Background fill color
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Bind texture
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, perlin_texture);
 
-        // Draw quad
+        // Activate shader
         shader.use();
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        shader.set_mat4("projection", projection);
+
+        glm::mat4 view = camera.get_view_matrix();
+        shader.set_mat4("view", view);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.set_mat4("model", model);
+
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -96,4 +126,41 @@ int main() {
     }   
     glfwTerminate();
     return EXIT_SUCCESS;
+}
+
+void glfw_mouse_callback(GLFWwindow* window, double xpos_input, double ypos_input) {
+    float xpos = (float)xpos_input;
+    float ypos = (float)ypos_input;
+
+    if (first_mouse) {
+        last_x = xpos;
+        last_y = ypos;
+        first_mouse = false;
+    }
+
+    float xoffset = xpos - last_x;
+    float yoffset = last_y - ypos;
+
+    last_x = xpos;
+    last_y = ypos;
+
+    camera.process_mouse_movement(xoffset, yoffset);
+}
+
+void glfw_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.process_mouse_scroll((float)yoffset);
+}
+
+void process_input(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::FORWARD, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::BACKWARD, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::LEFT, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::RIGHT, delta_time);
 }

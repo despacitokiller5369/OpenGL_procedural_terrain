@@ -14,8 +14,8 @@
 #include <stb_image.h>
 
 // Define Some Constants
-int window_width = 512;
-int window_height = 512;
+int WINDOW_WIDTH = 512;
+int WINDOW_HEIGHT = 512;
 const char* project_source_dir = PROJECT_SOURCE_DIR;
 
 #endif //~ Glitter Header

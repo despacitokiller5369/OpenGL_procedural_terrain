@@ -1,5 +1,6 @@
 #include "utils.hpp"
 
+#include <glad/glad.h>
 #include <fstream>
 #include <ctime>
 #include <cstdarg>

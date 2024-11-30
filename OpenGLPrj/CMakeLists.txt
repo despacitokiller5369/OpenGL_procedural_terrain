@@ -32,6 +32,8 @@ file(GLOB PROJECT_SHADERS shaders/*.comp
                           shaders/*.fs
                           )
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
+                          .gitignore
+                          .gitmodules
                           Readme.md)
 
 source_group("include" FILES ${PROJECT_HEADERS})

@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float last_x = 0.0f;
@@ -24,7 +25,7 @@ float last_frame = 0.0f;
 
 int main() {
     GLFWwindow* window;
-    if (!init_opengl(window, WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGLPrj")) return EXIT_FAILURE;
+    if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
     
     glfwSetCursorPosCallback(window, glfw_mouse_callback);
     glfwSetScrollCallback(window, glfw_scroll_callback);
@@ -49,16 +50,47 @@ int main() {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, noise.data());
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    float quad_vertices[] = {
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,   1.0f, 1.0f,
-         0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f,   1.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,   0.0f, 1.0f
-    };
-    GLuint quad_indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
+    const int terrain_width = 512;
+    const int terrain_height = 512;
+    const float terrain_scale = 0.1f;
+    float dispacement = 20.0f;
+
+    std::vector<float> quad_vertices;
+    std::vector<unsigned int> quad_indices;
+
+    for (int z = 0; z < terrain_height; z++) {
+        for (int x = 0; x < terrain_width; x++) {
+            float height = noise[z * terrain_width + x] * terrain_scale * dispacement;
+
+            quad_vertices.push_back(x * terrain_scale);
+            quad_vertices.push_back(height);
+            quad_vertices.push_back(z * terrain_scale);
+
+            quad_vertices.push_back(0.2f + height);
+            quad_vertices.push_back(0.7f);
+            quad_vertices.push_back(0.2f);
+
+            quad_vertices.push_back((float)x / terrain_width);
+            quad_vertices.push_back((float)z / terrain_height);
+        }
+    }
+
+    for (int z = 0; z < terrain_height - 1; z++) {
+        for (int x = 0; x < terrain_width - 1; x++) {
+            int top_left = z * terrain_width + x;
+            int top_right = top_left + 1;
+            int bottom_left = (z + 1) * terrain_width + x;
+            int bottom_right = bottom_left + 1;
+
+            quad_indices.push_back(top_left);
+            quad_indices.push_back(bottom_left);
+            quad_indices.push_back(top_right);
+
+            quad_indices.push_back(top_right);
+            quad_indices.push_back(bottom_left);
+            quad_indices.push_back(bottom_right);
+        }
+    }
 
     GLuint vao, vbo, ebo;
     glGenVertexArrays(1, &vao);
@@ -68,10 +100,10 @@ int main() {
     glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, quad_vertices.size() * sizeof(float), quad_vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quad_indices), quad_indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, quad_indices.size() * sizeof(unsigned int), quad_indices.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -79,6 +111,8 @@ int main() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
 
     const std::string vertex_shader_path = std::string(project_source_dir) + "/shaders/vertex.glsl";
     const std::string fragment_shader_path = std::string(project_source_dir) + "/shaders/fragment.glsl";
@@ -106,19 +140,17 @@ int main() {
         // Activate shader
         shader.use();
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)window_width / (float)window_height, 0.1f, 100.0f);
         shader.set_mat4("projection", projection);
 
         glm::mat4 view = camera.get_view_matrix();
         shader.set_mat4("view", view);
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
         shader.set_mat4("model", model);
 
         glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, quad_indices.size(), GL_UNSIGNED_INT, 0);
 
         // Flip buffers and draw
         glfwSwapBuffers(window);
@@ -163,4 +195,9 @@ void process_input(GLFWwindow* window) {
         camera.process_keyboard(Camera_Movement::LEFT, delta_time);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.process_keyboard(Camera_Movement::RIGHT, delta_time);
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::UP, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::DOWN, delta_time);  
 }

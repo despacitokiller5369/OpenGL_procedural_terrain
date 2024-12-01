@@ -97,3 +97,54 @@ void glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     gl_log("log.log", "Viewport: %i x %i\n", width, height);
 }
+
+void glfw_mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    Camera *camera = (Camera*)glfwGetWindowUserPointer(window);
+    if (!camera) return;
+
+    static bool first_mouse = true;
+    static float last_x = 0.0f;
+    static float last_y = 0.0f;
+
+    float xpos_output = (float)xpos;
+    float ypos_output = (float)ypos;
+
+    if (first_mouse) {
+        last_x = xpos_output;
+        last_y = ypos_output;
+        first_mouse = false;
+    }
+
+    float xoffset = xpos_output - last_x;
+    float yoffset = last_y - ypos_output;
+
+    last_x = xpos_output;
+    last_y = ypos_output;
+
+    camera->process_mouse_movement(xoffset, yoffset);
+}
+
+void glfw_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    Camera *camera = (Camera*)glfwGetWindowUserPointer(window);
+    if (!camera) return;
+    camera->process_mouse_scroll((float)yoffset);
+}
+
+void process_input(GLFWwindow* window, Camera& camera, float delta_time) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::FORWARD, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::BACKWARD, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::LEFT, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::RIGHT, delta_time);
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::UP, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        camera.process_keyboard(Camera_Movement::DOWN, delta_time);  
+}

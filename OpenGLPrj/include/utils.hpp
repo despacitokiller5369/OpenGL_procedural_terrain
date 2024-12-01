@@ -1,5 +1,7 @@
 #pragma once
 
+#include "camera.hpp"
+
 #include <GLFW/glfw3.h>
 #include <string>
 
@@ -11,4 +13,4 @@ void glfw_error_callback(int error, const char* description);
 void glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void glfw_mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void glfw_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void process_input(GLFWwindow* window);
+void process_input(GLFWwindow* window, Camera& camera, float delta_time);

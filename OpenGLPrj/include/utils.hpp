@@ -6,6 +6,7 @@
 #include <string>
 
 bool init_opengl(GLFWwindow*& window, int window_width, int window_height, const char* title);
+void configure_opengl(GLFWwindow* window, Camera& camera);
 bool restart_gl_log(const std::string& log_file_path);
 bool gl_log(const std::string& log_file_path, const char* message, ...);
 bool gl_log_err(const std::string& log_file_path, const char* message, ...);

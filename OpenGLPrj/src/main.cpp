@@ -19,16 +19,12 @@
 int main() {
     GLFWwindow* window;
     if (!init_opengl(window, window_width, window_height, "OpenGLPrj")) return EXIT_FAILURE;
-    
+
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     float delta_time = 0.0f;
     float last_frame = 0.0f;
 
-    glfwSetWindowUserPointer(window, &camera);
-    glfwSetCursorPosCallback(window, glfw_mouse_callback);
-    glfwSetScrollCallback(window, glfw_scroll_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glEnable(GL_DEPTH_TEST);
+    configure_opengl(window, camera);
 
     // Terrain
     Terrain terrain(512, 512, 0.1f, 20.0f, 10, 4, 0.5f);

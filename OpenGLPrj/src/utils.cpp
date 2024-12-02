@@ -38,6 +38,14 @@ bool init_opengl(GLFWwindow*& window, int window_width, int window_height, const
     return true;
 }
 
+void configure_opengl(GLFWwindow* window, Camera& camera) {
+    glfwSetWindowUserPointer(window, &camera);
+    glfwSetCursorPosCallback(window, glfw_mouse_callback);
+    glfwSetScrollCallback(window, glfw_scroll_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glEnable(GL_DEPTH_TEST);
+}
+
 bool restart_gl_log(const std::string& log_file_path) {
     std::ofstream log_file(log_file_path.c_str(), std::ios::out | std::ios::trunc);
     if (!log_file.is_open()) {

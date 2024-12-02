@@ -53,8 +53,8 @@ void Camera::process_mouse_scroll(float y_offset) {
     zoom -= (float)y_offset;
     if (zoom < 1.0f)
         zoom = 1.0f;
-    if (zoom > 45.0f)
-        zoom = 45.0f;
+    if (zoom > ZOOM)
+        zoom = ZOOM;
 }
 
 void Camera::update_camera_vectors() {

@@ -5,7 +5,7 @@
 
 Terrain::Terrain(int width, int height, float scale, float displacement, float noise_scale, int noise_octaves, float noise_persistence)
     : width(width), height(height), scale(scale), displacement(displacement), noise_scale(noise_scale), noise_octaves(noise_octaves), noise_persistence(noise_persistence) {
-        generate_noise(noise_scale, noise_octaves, noise_persistence);
+        generate_noise();
         generate_texture();
         generate_vertices();
         generate_indices();
@@ -18,7 +18,7 @@ Terrain::~Terrain() {
     glDeleteTextures(1, &texture_id);
 }
 
-void Terrain::generate_noise(float noise_scale, int noise_octaves, float noise_persistence) {
+void Terrain::generate_noise() {
     noise = generate_perlin_noise(width, height, noise_scale, noise_octaves, noise_persistence);
 }
 

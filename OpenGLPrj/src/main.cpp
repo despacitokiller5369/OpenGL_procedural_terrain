@@ -27,7 +27,10 @@ int main() {
     configure_opengl(window, camera);
 
     // Terrain
-    Terrain terrain(512, 512, 0.1f, 20.0f, 10, 4, 0.5f);
+    int terrain_width = 512, terrain_height = 512;
+    float terrain_scale = 0.1f, terrain_displacement = 20.0f;
+    float noise_scale = 10, noise_octaves = 4, noise_persistence = 0.5f;
+    Terrain terrain(terrain_width, terrain_height, terrain_scale, terrain_displacement, noise_scale, noise_octaves, noise_persistence);
     terrain.upload_to_gpu();
 
     const std::string vertex_shader_path = std::string(project_source_dir) + "/shaders/vertex.glsl";

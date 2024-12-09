@@ -18,7 +18,7 @@ class Terrain {
 
     unsigned int vao, vbo, ebo, texture_id;
 
-    void generate_noise(float noise_scale, int noise_octaves, float noise_persistence);
+    void generate_noise();
     void generate_vertices();
     void generate_indices();
     void generate_texture();

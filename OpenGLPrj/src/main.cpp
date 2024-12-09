@@ -27,11 +27,11 @@ int main() {
     configure_opengl(window, camera);
 
     // Terrain
-    int terrain_width = 512, terrain_height = 512;
-    float terrain_scale = 0.1f, terrain_displacement = 20.0f;
-    float noise_scale = 10, noise_octaves = 4, noise_persistence = 0.5f;
-    Terrain terrain(terrain_width, terrain_height, terrain_scale, terrain_displacement, noise_scale, noise_octaves, noise_persistence);
-    terrain.upload_to_gpu();
+    int chunk_size = 32, render_distance = 128;
+    float terrain_displacement = 20.0f;
+    float noise_octaves = 4, noise_persistence = 0.5f;
+
+    TerrainManager tm(chunk_size, render_distance, terrain_displacement, noise_octaves, noise_persistence);
 
     const std::string vertex_shader_path = std::string(project_source_dir) + "/shaders/vertex.glsl";
     const std::string fragment_shader_path = std::string(project_source_dir) + "/shaders/fragment.glsl";
@@ -64,7 +64,8 @@ int main() {
         glm::mat4 model = glm::mat4(1.0f);
         shader.set_mat4("model", model);
 
-        terrain.render();
+        tm.update_chunks(window);
+        tm.render();
 
         // Flip buffers and draw
         glfwSwapBuffers(window);

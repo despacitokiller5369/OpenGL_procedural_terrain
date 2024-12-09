@@ -65,6 +65,23 @@ float perlin_noise(float x, float y) {
     return lerp(v, lerpX1, lerpX2);
 }
 
+
+float perlin_noise(float x, float y, int octaves, float persistence) {
+    float total = 0.0f;
+    float frequency = 1.0f;
+    float amplitude = 1.0f;
+    float max_value = 0.0f;
+    
+    for (int i = 0; i < octaves; i++) {
+        total += perlin_noise(x * frequency, y * frequency) * amplitude;
+        max_value += amplitude;
+        amplitude *= persistence;
+        frequency *= 2.0f;
+    }
+
+    return total / max_value;
+}
+
 std::vector<float> generate_perlin_noise(int width, int height, float scale) {
     std::vector<float> noise(width * height);
     float min_val = std::numeric_limits<float>::max();

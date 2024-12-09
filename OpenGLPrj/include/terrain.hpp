@@ -1,5 +1,9 @@
 #pragma once
 
+#include "chunk.hpp"
+#include "camera.hpp"
+
+#include <GLFW/glfw3.h>
 #include <vector>
 
 class Terrain {
@@ -28,5 +32,23 @@ public:
     ~Terrain();
 
     void upload_to_gpu();
+    void render() const;
+};
+
+class TerrainManager {
+    int chunk_size;
+    int render_distance;
+    float chunk_displacement;
+    int noise_octaves;
+    float noise_persistence;
+    std::vector<Chunk> chunks;
+
+public:
+    TerrainManager(int chunk_size, int render_distance, float chunk_displacement, int noise_octaves, float noise_persistence);
+    ~TerrainManager();
+
+    void generate_chunks();
+    void update_chunks(GLFWwindow* window);
+
     void render() const;
 };

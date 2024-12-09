@@ -101,3 +101,43 @@ void Terrain::render() const {
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
+
+TerrainManager::TerrainManager(int chunk_size, int render_distance, float chunk_displacement, int noise_octaves, float noise_persistence)
+    : chunk_size(chunk_size), render_distance(render_distance), chunk_displacement(chunk_displacement), noise_octaves(noise_octaves), noise_persistence(noise_persistence) {
+    generate_chunks();
+}
+
+TerrainManager::~TerrainManager() {
+    for (auto& chunk : chunks) {
+        chunk.~Chunk();
+    }
+}
+
+void TerrainManager::generate_chunks() {
+    int rendered_chunks = render_distance / chunk_size;
+    
+    for (int z = -rendered_chunks; z < rendered_chunks; z++) {
+        for (int x = -rendered_chunks; x < rendered_chunks; x++) {
+            glm::vec3 position = glm::vec3(x * chunk_size, 0, z * chunk_size);
+            chunks.emplace_back(Chunk(position, chunk_size, chunk_displacement, noise_octaves, noise_persistence));
+        }
+    }
+}
+
+void TerrainManager::update_chunks(GLFWwindow* window) {
+    Camera *camera = (Camera*)glfwGetWindowUserPointer(window);
+
+    for (Chunk& chunk : chunks) {
+        glm::vec3 chunk_position = chunk.position + glm::vec3(chunk.chunk_size / 2.0f);
+        float distance = glm::length(camera->position - chunk_position);
+        chunk.is_active = distance < render_distance;
+    }
+}
+
+void TerrainManager::render() const {
+    for (const Chunk& chunk : chunks) {
+        if (chunk.is_active) {
+            chunk.render();
+        }
+    }
+}

@@ -16,8 +16,20 @@ glm::mat4 Camera::get_view_matrix() {
     return glm::lookAt(position, position + front, up);
 }
 
-void Camera::process_keyboard(Camera_Movement direction, float delta_time) {
+void Camera::process_keyboard(Camera_Movement direction, bool is_sprint, float delta_time) {
     float velocity = movement_speed * delta_time;
+    if (direction == FORWARD && is_sprint)
+        position += front * velocity * SPRINT_SPEED;
+    if (direction == BACKWARD && is_sprint)
+        position -= front * velocity * SPRINT_SPEED;
+    if (direction == LEFT && is_sprint)
+        position -= right * velocity * SPRINT_SPEED;
+    if (direction == RIGHT && is_sprint)
+        position += right * velocity * SPRINT_SPEED;
+    if (direction == UP && is_sprint)
+        position += up * velocity * SPRINT_SPEED;
+    if (direction == DOWN && is_sprint)
+        position -= up * velocity * SPRINT_SPEED;
     if (direction == FORWARD)
         position += front * velocity;
     if (direction == BACKWARD)

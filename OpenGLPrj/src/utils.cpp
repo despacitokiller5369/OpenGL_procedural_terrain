@@ -142,17 +142,35 @@ void process_input(GLFWwindow* window, Camera& camera, float delta_time) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.process_keyboard(Camera_Movement::FORWARD, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.process_keyboard(Camera_Movement::BACKWARD, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.process_keyboard(Camera_Movement::LEFT, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.process_keyboard(Camera_Movement::RIGHT, delta_time);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            camera.process_keyboard(Camera_Movement::FORWARD, true, delta_time);
+        camera.process_keyboard(Camera_Movement::FORWARD, false, delta_time);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            camera.process_keyboard(Camera_Movement::BACKWARD, true, delta_time);
+        camera.process_keyboard(Camera_Movement::BACKWARD, false, delta_time);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            camera.process_keyboard(Camera_Movement::LEFT, true, delta_time);
+        camera.process_keyboard(Camera_Movement::LEFT, false, delta_time);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            camera.process_keyboard(Camera_Movement::RIGHT, true, delta_time);
+        camera.process_keyboard(Camera_Movement::RIGHT, false, delta_time);
+    }
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.process_keyboard(Camera_Movement::UP, delta_time);
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        camera.process_keyboard(Camera_Movement::DOWN, delta_time);  
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            camera.process_keyboard(Camera_Movement::UP, true, delta_time);
+        camera.process_keyboard(Camera_Movement::UP, false, delta_time);
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            camera.process_keyboard(Camera_Movement::DOWN, true, delta_time);
+        camera.process_keyboard(Camera_Movement::DOWN, false, delta_time);
+    }
 }

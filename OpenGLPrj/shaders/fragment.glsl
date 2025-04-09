@@ -12,7 +12,7 @@ void main() {
 
     vec3 finalColor = outColor * noiseValue;
 
-    float grayscale = dot(finalColor, vec3(0.299, 0.587, 0.114));
+    //float grayscale = dot(finalColor, vec3(0.299, 0.587, 0.114));
 
-    FragColor = vec4(vec3(grayscale), 1.0);
+    FragColor = vec4(finalColor, 1.0);
 }

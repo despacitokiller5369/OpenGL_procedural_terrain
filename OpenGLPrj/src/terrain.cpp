@@ -30,7 +30,7 @@ void Terrain::apply_biome_blending() {
             float hill = noise[idx];
             float biome = (perlin_noise(x * 0.01f, z * 0.01f) + 1.0f) / 2.0f;
             float field = (perlin_noise(x * noise_scale * 0.2f, z * noise_scale * 0.2f) + 1.0f) / 2.0f;
-            field = powf(field, 2.0f);
+            field = powf(field, 10.0f);
             float blended = (1.0f - biome) * field + biome * hill;
             noise[idx] = blended;
         }
@@ -44,7 +44,7 @@ void Terrain::generate_vertices() {
     
     for (int z = 0; z < height; z++) {
         for (int x = 0; x < width; x++) {
-            float noise_height = noise[z * width + x] * scale * displacement;
+            float noise_height = noise[z * width + x] * scale * displacement * 2.0f;
             
             vertices.push_back(x * scale);
             vertices.push_back(noise_height);
@@ -54,7 +54,7 @@ void Terrain::generate_vertices() {
             if (t > 1.0f) t = 1.0f;
             else if (t < 0.0f) t = 0.0f;
             float r = (1.0f - t) * 0.2f + t * 0.5f;
-            float g = (1.0f - t) * 0.7f + t * 0.5f;
+            float g = (1.0f - t) * 0.9f + t * 0.5f;
             float b = (1.0f - t) * 0.2f + t * 0.5f;
             
             vertices.push_back(r);
